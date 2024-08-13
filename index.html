@@ -361,17 +361,16 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
     <script>
+        // Initialize the data variable to avoid conflicts
+        let propertyData = [];
+
         // Visitor Counter Logic
         document.addEventListener('DOMContentLoaded', function () {
             const visitCount = localStorage.getItem('visitCount') || 0;
             localStorage.setItem('visitCount', Number(visitCount) + 1);
             document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
         });
-
-        // Search Function Logic
-        let data = [];
 
         // Show the loading spinner
         document.getElementById('loadingSpinner').style.display = 'block';
@@ -380,7 +379,7 @@
         fetch('tri_county_data.json')
             .then(response => response.json())
             .then(jsonData => {
-                data = jsonData;
+                propertyData = jsonData;
                 document.getElementById('loadingSpinner').style.display = 'none';
                 initializeEventListeners();
             })
@@ -408,7 +407,7 @@
             const sortField = document.getElementById('sort').value;
 
             // Filter results based on query
-            let results = data.filter(item =>
+            let results = propertyData.filter(item =>
                 Object.values(item).some(val =>
                     String(val).toLowerCase().includes(query)
                 )
@@ -483,7 +482,7 @@
         // Check the password before showing the listing form fields
         function checkPassword() {
             const password = document.getElementById('listingPassword').value;
-            if (password === 'EZMLS') { // Replace with your actual password
+            if (password === 'your_password_here') { // Replace with your actual password
                 document.getElementById('listingFormFields').style.display = 'block';
             } else {
                 alert('Incorrect password');

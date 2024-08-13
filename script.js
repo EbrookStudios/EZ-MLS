@@ -20,21 +20,21 @@ async function fetchData() {
         data = await response.json();
     } catch (error) {
         console.error('Error fetching data:', error);
-        document.getElementById('noResults').style.display = 'block';
         document.getElementById('noResults').textContent = 'Failed to load data.';
+        document.getElementById('noResults').style.display = 'block';
     } finally {
         spinner.style.display = 'none';
     }
 }
 
 function initializeEventListeners() {
-    document.getElementById('searchBar').addEventListener('input', searchAndUpdateUI);
-    document.getElementById('sort').addEventListener('change', searchAndUpdateUI);
-    document.getElementById('clearSearch').addEventListener('click', clearSearch);
-    document.getElementById('theme-icon').addEventListener('click', toggleTheme);
-    document.getElementById('addListingButton').addEventListener('click', toggleAddListingFormVisibility);
-    document.getElementById('checkPasswordButton').addEventListener('click', checkPassword);
-    document.getElementById('submitListing').addEventListener('click', addNewListing);
+    document.getElementById('searchBar')?.addEventListener('input', searchAndUpdateUI);
+    document.getElementById('sort')?.addEventListener('change', searchAndUpdateUI);
+    document.getElementById('clearSearch')?.addEventListener('click', clearSearch);
+    document.getElementById('theme-icon')?.addEventListener('click', toggleTheme);
+    document.getElementById('addListingButton')?.addEventListener('click', toggleAddListingFormVisibility);
+    document.getElementById('checkPasswordButton')?.addEventListener('click', checkPassword);
+    document.getElementById('submitListing')?.addEventListener('click', addNewListing);
 }
 
 function searchAndUpdateUI() {
@@ -47,10 +47,14 @@ function searchAndUpdateUI() {
 function search(query, sortField) {
     query = query.toLowerCase();
     let filteredResults = data.filter(item =>
-        Object.values(item).some(val => val.toString().toLowerCase().includes(query))
+        Object.values(item).some(val => (val?.toString() ?? "").toLowerCase().includes(query))
     );
-    if (sortField) {
-        filteredResults.sort((a, b) => (a[sortField].toString().localeCompare(b[sortField].toString())));
+    if (sortField && filteredResults.length > 0 && filteredResults[0][sortField] !== undefined) {
+        filteredResults.sort((a, b) => {
+            let aValue = a[sortField]?.toString() ?? '';
+            let bValue = b[sortField]?.toString() ?? '';
+            return aValue.localeCompare(bValue);
+        });
     }
     return filteredResults;
 }
@@ -58,18 +62,16 @@ function search(query, sortField) {
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '';
-    if (results.length === 0) {
-        document.getElementById('noResults').style.display = 'block';
-    } else {
-        document.getElementById('noResults').style.display = 'none';
-        results.forEach(result => {
-            const row = resultsContainer.insertRow();
-            Object.values(result).forEach(text => {
-                const cell = row.insertCell();
-                cell.innerHTML = highlight(text, document.getElementById('searchBar').value);
-            });
+    document.getElementById('noResults').style.display = results.length ? 'none' : 'block';
+    results.forEach(result => {
+        const row = document.createElement('tr');
+        Object.keys(result).forEach(key => {
+            const cell = document.createElement('td');
+            cell.innerHTML = highlight(result[key], document.getElementById('searchBar').value);
+            row.appendChild(cell);
         });
-    }
+        resultsContainer.appendChild(row);
+    });
 }
 
 function highlight(text, query) {
@@ -99,9 +101,8 @@ function toggleAddListingFormVisibility() {
 
 function checkPassword() {
     const passwordField = document.getElementById('listingPassword');
-    const formFields = document.getElementById('listingFormFields');
     if (passwordField.value === 'ezmoney') {
-        formFields.style.display = 'block';
+        document.getElementById('listingFormFields').style.display = 'block';
     } else {
         alert('Incorrect password. Please try again.');
         passwordField.value = '';
@@ -125,4 +126,3 @@ function addNewListing() {
     document.getElementById('addListingForm').reset();
     toggleAddListingFormVisibility();
 }
-

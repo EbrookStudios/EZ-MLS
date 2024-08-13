@@ -68,14 +68,12 @@ function displayResults(results) {
     } else {
         noResults.style.display = 'none';
         results.forEach(result => {
-            const compensation = `${result.BuyerAgencyCompensation} ${result.BuyerAgencyCompensationType || ''}`;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${highlight(result.ListAgentFullName)}</td>
                 <td>${highlight(result.ListAgentDirectPhone)}</td>
                 <td>${highlight(result.Address)}</td>
-                <td>${highlight(compensation)}</td>
-                <td>${highlight(result.BuyerAgencyCompensationType)}</td>
+                <td>${highlight(result.BuyerAgencyCompensation)}</td>
             `;
             resultsContainer.appendChild(tr);
         });

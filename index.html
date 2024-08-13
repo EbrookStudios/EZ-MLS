@@ -20,7 +20,7 @@
     
     <main>
         <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search by address, city, price, etc...">
+            <input type="text" id="searchBar" placeholder="Search by agent, address, MLS, etc...">
             <div class="loading-spinner" id="loadingSpinner"></div>
         </div>
 
@@ -28,23 +28,22 @@
             <label for="sort">Sort by:</label>
             <select id="sort">
                 <option value="">None</option>
+                <option value="ListAgentFullName">Agent Name</option>
                 <option value="Address">Address</option>
-                <option value="City">City</option>
-                <option value="Price">Price</option>
-                <option value="Date">Date</option>
+                <option value="BuyerAgencyCompensation">Buyer's Agency Compensation</option>
             </select>
             <button id="clearSearch">Clear Search</button>
         </div>
         
-        <div id="noResults" style="display: none;">No results found.</div>
+        <div id="noResults" style="display: none;">No results found. Showing closest matches:</div>
         
         <table id="resultsTable">
             <thead>
                 <tr>
+                    <th>Agent Name</th>
+                    <th>Phone Number</th>
                     <th>Address</th>
-                    <th>City</th>
-                    <th>Price</th>
-                    <th>Date</th>
+                    <th>Buyer's Agency Compensation</th>
                 </tr>
             </thead>
             <tbody id="results"></tbody>

@@ -16,7 +16,6 @@
             padding: 0;
             overflow-x: hidden;
         }
-
         header {
             display: flex;
             flex-direction: column;
@@ -29,24 +28,20 @@
             top: 0;
             z-index: 1000;
         }
-
         .logo img {
             max-width: 150px;
             margin-bottom: 10px;
         }
-
         .logo h1 {
             color: #00bcd4;
             margin: 0;
             font-size: 24px;
         }
-
         .logo p {
             margin: 5px 0 0;
             color: #e0e0e0;
             font-size: 14px;
         }
-
         .header-controls {
             display: flex;
             justify-content: space-between;
@@ -55,19 +50,16 @@
             max-width: 500px;
             margin-top: 10px;
         }
-
         .theme-toggle {
             cursor: pointer;
             font-size: 24px;
             color: #f0f0f0;
         }
-
         .visitor-counter {
             font-size: 14px;
             margin-top: 5px;
             color: #00bcd4;
         }
-
         .add-listing-btn {
             background-color: #00bcd4;
             color: #1c1c1c;
@@ -78,16 +70,13 @@
             box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
             transition: background-color 0.3s ease;
         }
-
         .add-listing-btn:hover {
             background-color: #008394;
             color: #ffffff;
         }
-
         main {
             padding: 20px;
         }
-
         .search-container {
             display: flex;
             align-items: center;
@@ -95,7 +84,6 @@
             margin-bottom: 20px;
             flex-direction: column;
         }
-
         #searchBar {
             width: 100%;
             max-width: 500px;
@@ -109,12 +97,10 @@
             transition: all 0.3s ease-in-out;
             margin-bottom: 10px;
         }
-
         #searchBar:focus {
             outline: none;
             box-shadow: 0 0 20px rgba(0, 188, 212, 1);
         }
-
         .controls {
             display: flex;
             justify-content: space-between;
@@ -122,7 +108,6 @@
             width: 100%;
             max-width: 500px;
         }
-
         #sort {
             padding: 10px;
             font-size: 18px;
@@ -135,7 +120,6 @@
             flex: 1;
             margin-right: 10px;
         }
-
         #clearSearch {
             padding: 10px 20px;
             font-size: 18px;
@@ -147,12 +131,10 @@
             box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
             transition: all 0.3s ease-in-out;
         }
-
         #clearSearch:hover {
             background: #008394;
             color: #ffffff;
         }
-
         #resultsTable {
             width: 100%;
             border-collapse: collapse;
@@ -160,14 +142,11 @@
             background-color: #1c1c1c;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-
-        #resultsTable th,
-        #resultsTable td {
+        #resultsTable th, #resultsTable td {
             padding: 15px;
             border: 1px solid #333333;
             text-align: left;
         }
-
         #resultsTable th {
             background-color: #00bcd4;
             color: #1c1c1c;
@@ -175,24 +154,20 @@
             top: 0;
             z-index: 10;
         }
-
         #resultsTable td {
             background-color: #1c1c1c;
         }
-
         #noResults {
             text-align: center;
             color: #ff5252;
             font-size: 20px;
             margin-top: 20px;
         }
-
         .add-listing-container {
             display: flex;
             justify-content: center;
             margin-top: 20px;
         }
-
         .add-listing-form {
             display: none;
             flex-direction: column;
@@ -204,9 +179,7 @@
             max-width: 500px;
             width: 100%;
         }
-
-        .add-listing-form input,
-        .add-listing-form select {
+        .add-listing-form input, .add-listing-form select {
             width: 100%;
             margin-bottom: 10px;
             padding: 10px;
@@ -217,7 +190,6 @@
             box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
             font-size: 16px;
         }
-
         .add-listing-form button {
             padding: 10px 20px;
             border-radius: 5px;
@@ -228,12 +200,10 @@
             font-size: 18px;
             transition: all 0.3s ease-in-out;
         }
-
         .add-listing-form button:hover {
             background: #008394;
             color: #ffffff;
         }
-
         footer {
             background: #1c1c1c;
             padding: 20px;
@@ -242,23 +212,19 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
             position: relative;
         }
-
         footer .disclaimer {
             font-size: 12px;
             margin-top: 10px;
             color: #ccc;
         }
-
         @media (max-width: 600px) {
             .controls {
                 flex-direction: column;
             }
-
             #sort {
                 margin-bottom: 10px;
                 width: 100%;
             }
-
             #clearSearch {
                 width: 100%;
             }
@@ -295,7 +261,7 @@
         <select id="sort">
             <option value="">None</option>
             <option value="ListAgentFullName">Agent Name</option>
-            <option value="Address">Address</option>
+            <option value="Address">Address</option
             <option value="City">City</option>
             <option value="BuyerAgencyCompensation">Buyer's Agency Compensation</option>
         </select>
@@ -345,9 +311,6 @@
 </main>
 
 <footer>
-    <div class="visitor-counter">
-        <p>Site accessed <span id="visitCount"></span> times.</p>
-    </div>
     <p>Made with <i class="fas fa-heart"></i> by EZMoney</p>
     <div class="disclaimer">
         <p>Disclaimer: The information provided on this site is for informational purposes only and may not be accurate or up-to-date. EZMoney and its affiliates assume no liability for any inaccuracies in the data presented. Users are encouraged to verify any information before making decisions.</p>
@@ -379,7 +342,7 @@
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('loadingSpinner')..style.display = 'none';
             document.getElementById('noResults').style.display = 'block';
             document.getElementById('noResults').textContent = 'Failed to load data.';
         });
@@ -466,7 +429,7 @@
         );
     }
 
-    // Calculate basic similarity between two strings (e.g., Jaccard similarity)
+        // Calculate basic similarity between two strings (e.g., Jaccard similarity)
     function calculateSimilarity(str1, str2) {
         const intersection = new Set([...str1].filter(x => new Set([...str2]).has(x)));
         return intersection.size / (new Set([...str1]).size + new Set([...str2]).size - intersection.size);
@@ -486,18 +449,25 @@
         body.classList.toggle('dark-theme');
         themeIcon.classList.toggle('fa-moon');
         themeIcon.classList.toggle('fa-sun');
+        if(body.classList.contains('dark-theme')) {
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        } else {
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
     }
 
     // Show the Add Listing form
     function showAddListingForm() {
-        document.getElementById('addListingForm').style.display = 'flex';
+        const form = document.getElementById('addListingForm');
+        form.style.display = form.style.display === 'flex' ? 'none' : 'flex';
     }
 
     // Check the password before showing the listing form fields
     function checkPassword() {
         const password = document.getElementById('listingPassword').value;
-        if (password === 'your_password_here') { // Replace with your actual password
-            document.getElementById('listingFormFields').style.display = 'block';
+        const formFields = document.getElementById('listingFormFields');
+        if (password === 'your_password_here') { // Replace 'your_password_here' with your actual password
+            formFields.style.display = 'block';
         } else {
             alert('Incorrect password');
         }

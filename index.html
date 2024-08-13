@@ -457,7 +457,9 @@ function clearSearch() {
 }
 
 // Hide the theme toggle button by setting display to none
-document.getElementById('theme-icon').style.display = 'none';
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('theme-icon').style.display = 'none';
+});
 
 // Show the Add Listing form
 function showAddListingForm() {
@@ -474,17 +476,6 @@ function addNewListing() {
     const city = document.getElementById('city').value.trim();
     const price = document.getElementById('price').value.trim();
     const compensation = document.getElementById('compensation').value.trim();
-
-    // Log values for debugging purposes
-    console.log({
-        agentName,
-        phoneNumber,
-        licenseNumber,
-        address,
-        city,
-        price,
-        compensation
-    });
 
     // Validate that all fields are filled out
     if (!agentName || !phoneNumber || !licenseNumber || !address || !city || !price || !compensation) {
@@ -506,6 +497,7 @@ function addNewListing() {
     clearSearch();
     alert('Listing added successfully.');
 }
+
 
 </script>
 </body>

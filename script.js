@@ -48,16 +48,18 @@ function displayResults(results) {
 
     if (results.length === 0) {
         noResults.style.display = 'block';
-        noResults.textContent = 'No results found.';
+        noResults.textContent = 'No results found. Showing closest matches:';
     } else {
         noResults.style.display = 'none';
         results.forEach(result => {
+            const compensation = `${result.BuyerAgencyCompensation} ${result.BuyerAgencyCompensationType || ''}`;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${highlight(result.ListAgentFullName)}</td>
                 <td>${highlight(result.ListAgentDirectPhone)}</td>
                 <td>${highlight(result.Address)}</td>
-                <td>${highlight(result.BuyerAgencyCompensation)}</td>
+                <td>${highlight(compensation)}</td>
+                <td>${highlight(result.BuyerAgencyCompensationType)}</td>
             `;
             resultsContainer.appendChild(tr);
         });

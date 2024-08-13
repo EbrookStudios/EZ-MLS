@@ -82,12 +82,11 @@ main {
 
 .controls {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     margin-bottom: 15px;
     width: 100%;
     max-width: 400px;
-    flex-direction: column;
 }
 
 #sort {
@@ -127,6 +126,7 @@ main {
     margin-bottom: 20px;
     background-color: #1c1c1c;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    overflow-x: auto;
 }
 
 #resultsTable th, #resultsTable td {
@@ -153,6 +153,54 @@ main {
     color: #ff5252;
     font-size: 16px;
     margin-top: 20px;
+}
+
+.add-listing-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.add-listing-form {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background: #1c1c1c;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+    max-width: 500px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+.add-listing-form input,
+.add-listing-form select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #00bcd4;
+    background: #1c1c1c;
+    color: #e0e0e0;
+    box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+    font-size: 16px;
+}
+
+.add-listing-form button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: #00bcd4;
+    color: #1c1c1c;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease-in-out;
+}
+
+.add-listing-form button:hover {
+    background: #008394;
+    color: #ffffff;
 }
 
 footer {

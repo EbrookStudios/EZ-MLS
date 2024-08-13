@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Property Commission Search - EbrookStudios</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Inline CSS for basic styling */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
             color: #e0e0e0;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
         }
 
         header {
@@ -26,14 +27,13 @@
         }
 
         .logo img {
-            max-width: 120px;
+            max-width: 150px;
             margin-bottom: 10px;
         }
 
         .logo h1 {
             color: #00bcd4;
             margin: 0;
-            font-size: 20px;
         }
 
         .logo p {
@@ -55,17 +55,18 @@
 
         .search-container {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
             margin-bottom: 20px;
+            flex-direction: column;
         }
 
         #searchBar {
             width: 100%;
-            max-width: 350px;
+            max-width: 500px;
             padding: 15px;
-            font-size: 16px;
-            border-radius: 20px;
+            font-size: 18px;
+            border-radius: 25px;
             border: 2px solid #00bcd4;
             background: #1c1c1c;
             color: #e0e0e0;
@@ -79,31 +80,34 @@
             box-shadow: 0 0 20px rgba(0, 188, 212, 1);
         }
 
+        .loading-spinner {
+            display: none;
+        }
+
         .controls {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
             width: 100%;
-            max-width: 350px;
+            max-width: 500px;
         }
 
         #sort {
             padding: 10px;
-            font-size: 14px;
+            font-size: 18px;
             border-radius: 5px;
             background: #1c1c1c;
             color: #e0e0e0;
             border: 2px solid #00bcd4;
             cursor: pointer;
             box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
-            margin-bottom: 10px;
-            width: 100%;
+            flex: 1;
+            margin-right: 10px;
         }
 
         #clearSearch {
             padding: 10px 20px;
-            font-size: 14px;
+            font-size: 18px;
             border-radius: 5px;
             background: #00bcd4;
             color: #1c1c1c;
@@ -111,7 +115,6 @@
             cursor: pointer;
             box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
             transition: all 0.3s ease-in-out;
-            width: 100%;
         }
 
         #clearSearch:hover {
@@ -122,16 +125,15 @@
         #resultsTable {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
             background-color: #1c1c1c;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            margin-bottom: 20px;
         }
 
         #resultsTable th, #resultsTable td {
-            padding: 12px;
+            padding: 15px;
             border: 1px solid #333333;
             text-align: left;
-            font-size: 14px;
         }
 
         #resultsTable th {
@@ -139,10 +141,14 @@
             color: #1c1c1c;
         }
 
+        #resultsTable td {
+            background-color: #1c1c1c;
+        }
+
         #noResults {
             text-align: center;
             color: #ff5252;
-            font-size: 16px;
+            font-size: 20px;
             margin-top: 20px;
         }
 
@@ -156,53 +162,14 @@
         }
 
         footer .disclaimer {
-            font-size: 10px;
+            font-size: 12px;
             margin-top: 10px;
             color: #ccc;
         }
 
         .visitor-counter {
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        /* Popup styling */
-        .popup {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
             font-size: 14px;
-        }
-
-        .popup button {
-            background: #00bcd4;
-            border: none;
-            padding: 5px 10px;
-            color: white;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .popup button:hover {
-            background: #008394;
-        }
-
-        @media (max-width: 600px) {
-            .logo img {
-                max-width: 100px;
-            }
-
-            .controls {
-                width: 100%;
-            }
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -244,6 +211,7 @@
                     <th>Phone Number</th>
                     <th>Address</th>
                     <th>Buyer's Agency Compensation</th>
+                    <th>Buyer’s Agency Compensation Type</th>
                 </tr>
             </thead>
             <tbody id="results"></tbody>
@@ -260,30 +228,14 @@
         </div>
     </footer>
     
-    <div class="popup" id="donationPopup">
-        <p>If you would like to donate to the cause, please Venmo @Zakk-Easterbrook.</p>
-        <button onclick="closePopup()">Close</button>
-    </div>
-    
-        <script src="script.js"></script>
+    <script src="script.js"></script>
     <script>
         // Visitor Counter Logic
         document.addEventListener('DOMContentLoaded', function() {
             const visitCount = localStorage.getItem('visitCount') || 0;
             localStorage.setItem('visitCount', Number(visitCount) + 1);
             document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
-
-            // Show donation popup after 15 seconds
-            setTimeout(() => {
-                document.getElementById('donationPopup').style.display = 'block';
-            }, 15000);
         });
-
-        // Function to close the donation popup
-        function closePopup() {
-            document.getElementById('donationPopup').style.display = 'none';
-        }
     </script>
 </body>
 </html>
-

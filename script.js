@@ -1,115 +1,83 @@
 let data = [];
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     initializeVisitorCounter();
     fetchData();
     initializeEventListeners();
 });
 
 function initializeVisitorCounter() {
-    const visitCount = localStorage.getItem('visitCount') || 0;
-    localStorage.setItem('visitCount', Number(visitCount) + 1);
-    document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
+    const visitCountKey = 'visitCount';
+    const visits = Number(localStorage.getItem(visitCountKey) || 0) + 1;
+    localStorage.setItem(visitCountKey, visits);
+    document.getElementById('visitCount').textContent = visits;
 }
 
-function fetchData() {
+async function fetchData() {
     const spinner = document.getElementById('loadingSpinner');
     spinner.style.display = 'block';
-
-    fetch('tri_county_data.json')
-        .then(response => response.json())
-        .then(jsonData => {
-            data = jsonData;
-            spinner.style.display = 'none';
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            spinner.style.display = 'none';
-            document.getElementById('noResults').style.display = 'block';
-            document.getElementById('noResults').textContent = 'Failed to load data.';
-        });
+    try {
+        const response = await fetch('tri_county_data.json');
+        data = await response.json();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('noResults').textContent = 'Failed to load data.';
+        document.getElementById('noResults').style.display = 'block';
+    } finally {
+        spinner.style.display = 'none';
+    }
 }
 
 function initializeEventListeners() {
-    document.getElementById('searchBar').addEventListener('input', search);
-    document.getElementById('sort').addEventListener('change', search);
+    document.getElementById('searchBar').addEventListener('input', () => searchAndUpdateUI());
+    document.getElementById('sort').addEventListener('change', () => searchAndUpdateUI());
     document.getElementById('clearSearch').addEventListener('click', clearSearch);
     document.getElementById('theme-icon').addEventListener('click', toggleTheme);
-    document.getElementById('addListingButton').addEventListener('click', showAddListingForm);
+    document.getElementById('addListingButton').addEventListener('click', toggleAddListingFormVisibility);
     document.getElementById('checkPasswordButton').addEventListener('click', checkPassword);
     document.getElementById('submitListing').addEventListener('click', addNewListing);
 }
 
-function search() {
-    const query = document.getElementById('searchBar').value.toLowerCase();
-    const sortField = document.getElementById('sort').value;
-
-    let results = data.filter(item =>
-        Object.values(item).some(val =>
-            String(val).toLowerCase().includes(query)
-        )
-    );
-
-    if (!results.length && query) {
-        results = findCloseMatches(query);
-    }
-
-    if (sortField) {
-        results.sort((a, b) => typeof a[sortField] === 'string' ?
-            a[sortField].localeCompare(b[sortField]) :
-            a[sortField] - b[sortField]);
-    }
-
+function searchAndUpdateUI() {
+    const results = search(document.getElementById('searchBar').value, document.getElementById('sort').value);
     displayResults(results);
+}
+
+function search(query, sortField) {
+    query = query.toLowerCase();
+    let results = data.filter(item => Object.values(item).some(val => val.toString().toLowerCase().includes(query)));
+    return sortField ? results.sort((a, b) => sortComparator(a[sortField], b[sortField])) : results;
+}
+
+function sortComparator(a, b) {
+    return typeof a === 'string' ? a.localeCompare(b) : a - b;
 }
 
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
-    const noResults = document.getElementById('noResults');
-    resultsContainer.innerHTML = '';
+    resultsContainer.innerHTML = results.map(result => createTableRow(result)).join('');
+    document.getElementById('noResults').style.display = results.length ? 'none' : 'block';
+}
 
-    if (!results.length) {
-        noResults.style.display = 'block';
-        noResults.textContent = 'No results found. Showing closest matches:';
-    } else {
-        noResults.style.display = 'none';
-        results.forEach(result => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
+function createTableRow(result) {
+    return `<tr>
                 <td>${highlight(result.ListAgentFullName)}</td>
                 <td>${highlight(result.ListAgentDirectPhone)}</td>
                 <td>${highlight(result.Address)}</td>
                 <td>${highlight(result.City)}</td>
                 <td>${highlight(result.BuyerAgencyCompensation)}</td>
-            `;
-            resultsContainer.appendChild(tr);
-        });
-    }
+            </tr>`;
 }
 
 function highlight(text) {
     const query = document.getElementById('searchBar').value.toLowerCase();
-    return query ? text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`) : text;
-}
-
-function findCloseMatches(query) {
-    const threshold = 0.3;
-    return data.filter(item =>
-        Object.values(item).some(val =>
-            calculateSimilarity(query, String(val).toLowerCase()) > threshold
-        )
-    );
-}
-
-function calculateSimilarity(str1, str2) {
-    const intersection = new Set([...str1].filter(x => str2.includes(x)));
-    return intersection.size / (new Set([...str1]).size + new Set([...str2]).size - intersection.size);
+    return query ? text.replace(new RegExp(query, 'gi'), match => `<mark>${match}</mark>`) : text;
 }
 
 function clearSearch() {
     document.getElementById('searchBar').value = '';
     document.getElementById('sort').value = '';
-    search();
+    searchAndUpdateUI();
 }
 
 function toggleTheme() {
@@ -120,7 +88,7 @@ function toggleTheme() {
     themeIcon.classList.toggle('fa-moon', !body.classList.contains('dark-theme'));
 }
 
-function showAddListingForm() {
+function toggleAddListingFormVisibility() {
     const form = document.getElementById('addListingForm');
     form.style.display = form.style.display === 'none' ? 'flex' : 'none';
 }
@@ -130,18 +98,24 @@ function checkPassword() {
     if (password === 'ezmoney') {
         document.getElementById('listingFormFields').style.display = 'block';
     } else {
-        alert('Incorrect password');
+        alert('Incorrect password. Please try again.');
     }
 }
 
 function addNewListing() {
     const fields = ['agentOrHomeowner', 'agentName', 'licenseNumber', 'address', 'city', 'price', 'compensation'].map(id => document.getElementById(id));
-    if (fields.some(field => !field.value)) {
+    if (fields.some(field => !field.value.trim())) {
         alert('Please fill out all required fields.');
         return;
     }
 
-    const newListing = {
+    data.push(createListingObject(fields));
+    alert('Listing added successfully!');
+    clearFormFields();
+}
+
+function createListingObject(fields) {
+    return {
         ListAgentFullName: fields[1].value,
         ListAgentDirectPhone: fields[0].value === 'Agent' ? fields[2].value : 'N/A',
         Address: fields[3].value,
@@ -149,10 +123,6 @@ function addNewListing() {
         Price: fields[5].value,
         BuyerAgencyCompensation: fields[6].value
     };
-
-    data.push(newListing);
-    alert('Listing added successfully!');
-    clearFormFields();
 }
 
 function clearFormFields() {

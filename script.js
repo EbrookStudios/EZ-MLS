@@ -1,128 +1,180 @@
-let data = [];
+let data = []; // Ensure 'data' is declared only once
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeVisitorCounter();
-    fetchData();
-    initializeEventListeners();
-});
+// Show the loading spinner
+document.getElementById('loadingSpinner').style.display = 'block';
 
-function initializeVisitorCounter() {
-    const visitCount = localStorage.getItem('visitCount') || 0;
-    localStorage.setItem('visitCount', Number(visitCount) + 1);
-    document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
-}
-
-async function fetchData() {
-    const spinner = document.getElementById('loadingSpinner');
-    spinner.style.display = 'block';
-    try {
-        const response = await fetch('tri_county_data.json');
-        data = await response.json();
-    } catch (error) {
+// Fetch the JSON data
+fetch('tri_county_data.json')
+    .then(response => response.json())
+    .then(jsonData => {
+        data = jsonData;
+        document.getElementById('loadingSpinner').style.display = 'none';
+        initializeEventListeners();
+    })
+    .catch(error => {
         console.error('Error fetching data:', error);
-        document.getElementById('noResults').textContent = 'Failed to load data.';
+        document.getElementById('loadingSpinner').style.display = 'none';
         document.getElementById('noResults').style.display = 'block';
-    } finally {
-        spinner.style.display = 'none';
-    }
-}
+        document.getElementById('noResults').textContent = 'Failed to load data.';
+    });
 
+// Initialize event listeners
 function initializeEventListeners() {
-    document.getElementById('searchBar')?.addEventListener('input', searchAndUpdateUI);
-    document.getElementById('sort')?.addEventListener('change', searchAndUpdateUI);
-    document.getElementById('clearSearch')?.addEventListener('click', clearSearch);
-    document.getElementById('theme-icon')?.addEventListener('click', toggleTheme);
-    document.getElementById('addListingButton')?.addEventListener('click', toggleAddListingFormVisibility);
-    document.getElementById('checkPasswordButton')?.addEventListener('click', checkPassword);
-    document.getElementById('submitListing')?.addEventListener('click', addNewListing);
+    document.getElementById('searchBar').addEventListener('input', search);
+    document.getElementById('sort').addEventListener('change', search);
+    document.getElementById('clearSearch').addEventListener('click', clearSearch);
+    document.getElementById('theme-icon').addEventListener('click', toggleTheme);
+    document.getElementById('addListingButton').addEventListener('click', showAddListingForm);
+    document.getElementById('checkPasswordButton').addEventListener('click', checkPassword);
+    document.getElementById('submitListing').addEventListener('click', addNewListing);
 }
 
-function searchAndUpdateUI() {
-    const query = document.getElementById('searchBar').value;
+// Search function
+function search() {
+    const query = document.getElementById('searchBar').value.toLowerCase();
     const sortField = document.getElementById('sort').value;
-    const results = search(query, sortField);
+
+    // Filter results based on query
+    let results = data.filter(item => 
+        Object.values(item).some(val => 
+            String(val).toLowerCase().includes(query)
+        )
+    );
+
+    // If no results, try finding close matches
+    if (results.length === 0 && query) {
+        results = findCloseMatches(query);
+    }
+
+    // Sort results if a sort field is selected
+    if (sortField) {
+        results.sort((a, b) => {
+            if (typeof a[sortField] === 'string') {
+                return a[sortField].localeCompare(b[sortField]);
+            }
+            return a[sortField] - b[sortField];
+        });
+    }
+
     displayResults(results);
 }
 
-function search(query, sortField) {
-    query = query.toLowerCase();
-    let filteredResults = data.filter(item =>
-        Object.values(item).some(val => (val?.toString() ?? "").toLowerCase().includes(query))
-    );
-    if (sortField && filteredResults.length > 0 && filteredResults[0][sortField] !== undefined) {
-        filteredResults.sort((a, b) => {
-            let aValue = a[sortField]?.toString() ?? '';
-            let bValue = b[sortField]?.toString() ?? '';
-            return aValue.localeCompare(bValue);
-        });
-    }
-    return filteredResults;
-}
-
+// Display the search results
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
+    const noResults = document.getElementById('noResults');
     resultsContainer.innerHTML = '';
-    document.getElementById('noResults').style.display = results.length ? 'none' : 'block';
-    results.forEach(result => {
-        const row = document.createElement('tr');
-        Object.keys(result).forEach(key => {
-            const cell = document.createElement('td');
-            cell.innerHTML = highlight(result[key], document.getElementById('searchBar').value);
-            row.appendChild(cell);
+
+    if (results.length === 0) {
+        noResults.style.display = 'block';
+        noResults.textContent = 'No results found. Showing closest matches:';
+    } else {
+        noResults.style.display = 'none';
+        results.forEach(result => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${highlight(result.ListAgentFullName)}</td>
+                <td>${highlight(result.ListAgentDirectPhone)}</td>
+                <td>${highlight(result.Address)}</td>
+                <td>${highlight(result.City)}</td>
+                <td>${highlight(result.BuyerAgencyCompensation)}</td>
+            `;
+            resultsContainer.appendChild(tr);
         });
-        resultsContainer.appendChild(row);
-    });
+    }
 }
 
-function highlight(text, query) {
-    if (!query) return text;
-    const pattern = new RegExp(`(${query})`, 'gi');
-    return text.toString().replace(pattern, '<mark>$1</mark>');
+// Highlight the search term in results
+function highlight(text) {
+    const query = document.getElementById('searchBar').value.toLowerCase();
+    if (!query || !text) return text;
+    return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
 }
 
+// Find close matches by checking for partial matches
+function findCloseMatches(query) {
+    const threshold = 0.3;  // Set a threshold for what constitutes a "close" match
+    return data.filter(item => 
+        Object.values(item).some(val => 
+            calculateSimilarity(query, String(val).toLowerCase()) > threshold
+        )
+    );
+}
+
+// Calculate basic similarity between two strings (e.g., Jaccard similarity)
+function calculateSimilarity(str1, str2) {
+    const intersection = new Set([...str1].filter(x => new Set([...str2]).has(x)));
+    return intersection.size / (new Set([...str1]).size + new Set([...str2]).size - intersection.size);
+}
+
+// Clear the search input and results
 function clearSearch() {
     document.getElementById('searchBar').value = '';
     document.getElementById('sort').value = '';
-    searchAndUpdateUI();
+    search();
 }
 
+// Toggle between dark and light mode
 function toggleTheme() {
     const body = document.body;
     const themeIcon = document.getElementById('theme-icon');
     body.classList.toggle('dark-theme');
-    themeIcon.classList.toggle('fa-sun', body.classList.contains('dark-theme'));
-    themeIcon.classList.toggle('fa-moon', !body.classList.contains('dark-theme'));
+    themeIcon.classList.toggle('fa-moon');
+    themeIcon.classList.toggle('fa-sun');
 }
 
-function toggleAddListingFormVisibility() {
-    const form = document.getElementById('addListingForm');
-    form.style.display = form.style.display === 'flex' ? 'none' : 'flex';
+// Show the Add Listing form
+function showAddListingForm() {
+    document.getElementById('addListingForm').style.display = 'flex';
 }
 
+// Check the password before showing the listing form fields
 function checkPassword() {
-    const passwordField = document.getElementById('listingPassword');
-    if (passwordField.value === 'ezmoney') {
+    const password = document.getElementById('listingPassword').value;
+    if (password === 'your_password_here') { // Replace with your actual password
         document.getElementById('listingFormFields').style.display = 'block';
     } else {
-        alert('Incorrect password. Please try again.');
-        passwordField.value = '';
+        alert('Incorrect password');
     }
 }
 
+// Add a new listing
 function addNewListing() {
-    const fields = ['agentOrHomeowner', 'agentName', 'licenseNumber', 'address', 'city', 'price', 'compensation'].map(id => document.getElementById(id));
-    if (fields.some(field => !field.value.trim())) {
+    const agentOrHomeowner = document.getElementById('agentOrHomeowner').value;
+    const agentName = document.getElementById('agentName').value;
+    const licenseNumber = document.getElementById('licenseNumber').value;
+    const address = document.getElementById('address').value;
+    const city = document.getElementById('city').value;
+    const price = document.getElementById('price').value;
+    const compensation = document.getElementById('compensation').value;
+
+    if (!agentName || !address || !city || !price || !compensation) {
         alert('Please fill out all required fields.');
         return;
     }
 
-    const newListing = fields.reduce((acc, field) => {
-        acc[field.id] = field.value;
-        return acc;
-    }, {});
+    const newListing = {
+        ListAgentFullName: agentName,
+        ListAgentDirectPhone: agentOrHomeowner === 'Agent' ? licenseNumber : 'N/A',
+        Address: address,
+        City: city,
+        BuyerAgencyCompensation: compensation,
+        Price: price
+    };
 
     data.push(newListing);
+    clearFormFields();
     alert('Listing added successfully!');
-    document.getElementById('addListingForm').reset();
-    toggleAddListingFormVisibility();
+}
+
+// Clear the form fields after adding a listing
+function clearFormFields() {
+    document.getElementById('agentOrHomeowner').value = 'Agent';
+    document.getElementById('agentName').value = '';
+    document.getElementById('licenseNumber').value = '';
+    document.getElementById('address').value = '';
+    document.getElementById('city').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('compensation').value = '';
+    document.getElementById('listingFormFields').style.display = 'none';
 }

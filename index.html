@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZ-MLS Property Commission Search</title>
 
+    <!-- Favicon -->
+    <link rel="icon" href="EZ-MLS.png" type="image/png">
+
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="EZ-MLS Property Commission Search">
     <meta property="og:type" content="website">
@@ -72,12 +75,6 @@
             cursor: pointer;
             font-size: 20px;
             color: #f0f0f0;
-        }
-
-        .visitor-counter {
-            font-size: 12px;
-            margin-top: 5px;
-            color: #00bcd4;
         }
 
         .add-listing-btn {
@@ -289,7 +286,7 @@
 <body>
     <header>
         <div class="logo">
-            <img src="EZ-MLS.png" alt="EZMoney Logo">
+            <img src="EZ-MLS.png" alt="EZ-MLS Logo">
             <h1>EZ-MLS</h1>
             <p>Mahoning, Columbiana, and Trumbull Counties - Data as of August 12th</p>
         </div>
@@ -304,7 +301,7 @@
     <main>
         <div class="search-container">
             <input type="text" id="searchBar" placeholder="Search by agent, address, city, etc..." aria-label="Search">
-            <div class="loading-spinner" id="loadingSpinner"></div>
+            <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
         </div>
 
         <div class="controls">
@@ -486,7 +483,7 @@
         // Check the password before showing the listing form fields
         function checkPassword() {
             const password = document.getElementById('listingPassword').value;
-            if (password === 'your_password_here') { // Replace with your actual password
+            if (password === 'EZMLS') { // Replace with your actual password
                 document.getElementById('listingFormFields').style.display = 'block';
             } else {
                 alert('Incorrect password');

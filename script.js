@@ -131,7 +131,7 @@ function showAddListingForm() {
 // Check the password before showing the listing form fields
 function checkPassword() {
     const password = document.getElementById('listingPassword').value;
-    if (password === 'your_password_here') { // Replace with your actual password
+    if (password === 'ezmoney') { // Replace with your actual password
         document.getElementById('listingFormFields').style.display = 'block';
     } else {
         alert('Incorrect password');

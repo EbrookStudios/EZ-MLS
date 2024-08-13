@@ -1,24 +1,35 @@
-let data = []; // Ensure 'data' is declared only once
+let data = [];
 
-// Show the loading spinner
-document.getElementById('loadingSpinner').style.display = 'block';
+document.addEventListener('DOMContentLoaded', function() {
+    initializeVisitorCounter();
+    fetchData();
+    initializeEventListeners();
+});
 
-// Fetch the JSON data
-fetch('tri_county_data.json')
-    .then(response => response.json())
-    .then(jsonData => {
-        data = jsonData;
-        document.getElementById('loadingSpinner').style.display = 'none';
-        initializeEventListeners();
-    })
-    .catch(error => {
-        console.error('Error fetching data:', error);
-        document.getElementById('loadingSpinner').style.display = 'none';
-        document.getElementById('noResults').style.display = 'block';
-        document.getElementById('noResults').textContent = 'Failed to load data.';
-    });
+function initializeVisitorCounter() {
+    const visitCount = localStorage.getItem('visitCount') || 0;
+    localStorage.setItem('visitCount', Number(visitCount) + 1);
+    document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
+}
 
-// Initialize event listeners
+function fetchData() {
+    const spinner = document.getElementById('loadingSpinner');
+    spinner.style.display = 'block';
+
+    fetch('tri_county_data.json')
+        .then(response => response.json())
+        .then(jsonData => {
+            data = jsonData;
+            spinner.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            spinner.style.display = 'none';
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('noResults').textContent = 'Failed to load data.';
+        });
+}
+
 function initializeEventListeners() {
     document.getElementById('searchBar').addEventListener('input', search);
     document.getElementById('sort').addEventListener('change', search);
@@ -29,43 +40,35 @@ function initializeEventListeners() {
     document.getElementById('submitListing').addEventListener('click', addNewListing);
 }
 
-// Search function
 function search() {
     const query = document.getElementById('searchBar').value.toLowerCase();
     const sortField = document.getElementById('sort').value;
 
-    // Filter results based on query
-    let results = data.filter(item => 
-        Object.values(item).some(val => 
+    let results = data.filter(item =>
+        Object.values(item).some(val =>
             String(val).toLowerCase().includes(query)
         )
     );
 
-    // If no results, try finding close matches
-    if (results.length === 0 && query) {
+    if (!results.length && query) {
         results = findCloseMatches(query);
     }
 
-    // Sort results if a sort field is selected
     if (sortField) {
-        results.sort((a, b) => {
-            if (typeof a[sortField] === 'string') {
-                return a[sortField].localeCompare(b[sortField]);
-            }
-            return a[sortField] - b[sortField];
-        });
+        results.sort((a, b) => typeof a[sortField] === 'string' ?
+            a[sortField].localeCompare(b[sortField]) :
+            a[sortField] - b[sortField]);
     }
 
     displayResults(results);
 }
 
-// Display the search results
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
     const noResults = document.getElementById('noResults');
     resultsContainer.innerHTML = '';
 
-    if (results.length === 0) {
+    if (!results.length) {
         noResults.style.display = 'block';
         noResults.textContent = 'No results found. Showing closest matches:';
     } else {
@@ -84,97 +87,75 @@ function displayResults(results) {
     }
 }
 
-// Highlight the search term in results
 function highlight(text) {
     const query = document.getElementById('searchBar').value.toLowerCase();
-    if (!query || !text) return text;
-    return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
+    return query ? text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`) : text;
 }
 
-// Find close matches by checking for partial matches
 function findCloseMatches(query) {
-    const threshold = 0.3;  // Set a threshold for what constitutes a "close" match
-    return data.filter(item => 
-        Object.values(item).some(val => 
+    const threshold = 0.3;
+    return data.filter(item =>
+        Object.values(item).some(val =>
             calculateSimilarity(query, String(val).toLowerCase()) > threshold
         )
     );
 }
 
-// Calculate basic similarity between two strings (e.g., Jaccard similarity)
 function calculateSimilarity(str1, str2) {
-    const intersection = new Set([...str1].filter(x => new Set([...str2]).has(x)));
+    const intersection = new Set([...str1].filter(x => str2.includes(x)));
     return intersection.size / (new Set([...str1]).size + new Set([...str2]).size - intersection.size);
 }
 
-// Clear the search input and results
 function clearSearch() {
     document.getElementById('searchBar').value = '';
     document.getElementById('sort').value = '';
     search();
 }
 
-// Toggle between dark and light mode
 function toggleTheme() {
     const body = document.body;
     const themeIcon = document.getElementById('theme-icon');
     body.classList.toggle('dark-theme');
-    themeIcon.classList.toggle('fa-moon');
-    themeIcon.classList.toggle('fa-sun');
+    themeIcon.classList.toggle('fa-sun', body.classList.contains('dark-theme'));
+    themeIcon.classList.toggle('fa-moon', !body.classList.contains('dark-theme'));
 }
 
-// Show the Add Listing form
 function showAddListingForm() {
-    document.getElementById('addListingForm').style.display = 'flex';
+    const form = document.getElementById('addListingForm');
+    form.style.display = form.style.display === 'none' ? 'flex' : 'none';
 }
 
-// Check the password before showing the listing form fields
 function checkPassword() {
     const password = document.getElementById('listingPassword').value;
-    if (password === 'ezmoney') { // Replace with your actual password
+    if (password === 'ezmoney') {
         document.getElementById('listingFormFields').style.display = 'block';
     } else {
         alert('Incorrect password');
     }
 }
 
-// Add a new listing
 function addNewListing() {
-    const agentOrHomeowner = document.getElementById('agentOrHomeowner').value;
-    const agentName = document.getElementById('agentName').value;
-    const licenseNumber = document.getElementById('licenseNumber').value;
-    const address = document.getElementById('address').value;
-    const city = document.getElementById('city').value;
-    const price = document.getElementById('price').value;
-    const compensation = document.getElementById('compensation').value;
-
-    if (!agentName || !address || !city || !price || !compensation) {
+    const fields = ['agentOrHomeowner', 'agentName', 'licenseNumber', 'address', 'city', 'price', 'compensation'].map(id => document.getElementById(id));
+    if (fields.some(field => !field.value)) {
         alert('Please fill out all required fields.');
         return;
     }
 
     const newListing = {
-        ListAgentFullName: agentName,
-        ListAgentDirectPhone: agentOrHomeowner === 'Agent' ? licenseNumber : 'N/A',
-        Address: address,
-        City: city,
-        BuyerAgencyCompensation: compensation,
-        Price: price
+        ListAgentFullName: fields[1].value,
+        ListAgentDirectPhone: fields[0].value === 'Agent' ? fields[2].value : 'N/A',
+        Address: fields[3].value,
+        City: fields[4].value,
+        Price: fields[5].value,
+        BuyerAgencyCompensation: fields[6].value
     };
 
     data.push(newListing);
-    clearFormFields();
     alert('Listing added successfully!');
+    clearFormFields();
 }
 
-// Clear the form fields after adding a listing
 function clearFormFields() {
-    document.getElementById('agentOrHomeowner').value = 'Agent';
-    document.getElementById('agentName').value = '';
-    document.getElementById('licenseNumber').value = '';
-    document.getElementById('address').value = '';
-    document.getElementById('city').value = '';
-    document.getElementById('price').value = '';
-    document.getElementById('compensation').value = '';
+    document.querySelectorAll('#addListingForm input, #addListingForm select').forEach(input => input.value = '');
     document.getElementById('listingFormFields').style.display = 'none';
 }

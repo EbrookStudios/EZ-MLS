@@ -316,7 +316,7 @@
             <button id="clearSearch">Clear Search</button>
         </div>
 
-        <div id="noResults" style="display: none;">No results found. Showing closest matches:</div>
+        <div id="noResults" style="display: none;">Failed to load data. Please enter a search term.</div>
 
         <table id="resultsTable">
             <thead>
@@ -334,16 +334,13 @@
         <!-- Add a Listing Section -->
         <div class="add-listing-form" id="addListingForm">
             <h2>Add a New Listing</h2>
-            <input type="password" id="listingPassword" placeholder="Enter Password">
-            <button id="checkPasswordButton">Submit Password</button>
-
-            <div id="listingFormFields" style="display:none;">
+            <div id="listingFormFields">
                 <select id="agentOrHomeowner">
                     <option value="Agent">Agent</option>
                     <option value="Homeowner">Homeowner</option>
                 </select>
-
                 <input type="text" id="agentName" placeholder="Your Name" required>
+                <input type="text" id="phoneNumber" placeholder="Phone Number" required>
                 <input type="text" id="licenseNumber" placeholder="License Number (if Agent)">
                 <input type="text" id="address" placeholder="Property Address" required>
                 <input type="text" id="city" placeholder="City" required>
@@ -365,13 +362,6 @@
         // Initialize the data variable to avoid conflicts
         let propertyData = [];
 
-        // Visitor Counter Logic
-        document.addEventListener('DOMContentLoaded', function () {
-            const visitCount = localStorage.getItem('visitCount') || 0;
-            localStorage.setItem('visitCount', Number(visitCount) + 1);
-            document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
-        });
-
         // Show the loading spinner
         document.getElementById('loadingSpinner').style.display = 'block';
 
@@ -387,7 +377,7 @@
                 console.error('Error fetching data:', error);
                 document.getElementById('loadingSpinner').style.display = 'none';
                 document.getElementById('noResults').style.display = 'block';
-                document.getElementById('noResults').textContent = 'Failed to load data.';
+                document.getElementById('noResults').textContent = 'Failed to load data. Please enter a search term.';
             });
 
         // Initialize event listeners
@@ -397,7 +387,6 @@
             document.getElementById('clearSearch').addEventListener('click', clearSearch);
             document.getElementById('theme-icon').addEventListener('click', toggleTheme);
             document.getElementById('addListingButton').addEventListener('click', showAddListingForm);
-            document.getElementById('checkPasswordButton').addEventListener('click', checkPassword);
             document.getElementById('submitListing').addEventListener('click', addNewListing);
         }
 
@@ -438,9 +427,11 @@
             } else {
                 noResults.style.display = 'none';
                 results.forEach(result => {
+                    const isNewListing = new Date(result.timestamp) > new Date('2024-08-12');
+                    const star = isNewListing ? '⭐' : '';
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${highlight(result.ListAgentFullName)}</td>
+                        <td>${highlight(result.ListAgentFullName)} ${star}</td>
                         <td>${highlight(result.ListAgentDirectPhone)}</td>
                         <td>${highlight(result.Address)}</td>
                         <td>${highlight(result.City)}</td>
@@ -479,14 +470,28 @@
             document.getElementById('addListingForm').style.display = 'flex';
         }
 
-        // Check the password before showing the listing form fields
-        function checkPassword() {
-            const password = document.getElementById('listingPassword').value;
-            if (password === 'your_password_here') { // Replace with your actual password
-                document.getElementById('listingFormFields').style.display = 'block';
-            } else {
-                alert('Incorrect password');
-            }
+        // Add a new listing with a timestamp
+        function addNewListing() {
+            const agentOrHomeowner = document.getElementById('agentOrHomeowner').value;
+            const agentName = document.getElementById('agentName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const licenseNumber = document.getElementById('licenseNumber').value || 'N/A';
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const price = document.getElementById('price').value;
+            const compensation = document.getElementById('compensation').value;
+
+            const newListing = {
+                ListAgentFullName: agentName,
+                ListAgentDirectPhone: phoneNumber,
+                Address: address,
+                City: city,
+                BuyerAgencyCompensation: compensation,
+                timestamp: new Date().toISOString(),
+            };
+
+            propertyData.push(newListing);
+            clearSearch();
         }
     </script>
 </body>

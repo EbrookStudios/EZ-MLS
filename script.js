@@ -1,10 +1,10 @@
-let data = [];
-
 document.addEventListener('DOMContentLoaded', function() {
     initializeVisitorCounter();
     fetchData();
     initializeEventListeners();
 });
+
+let data = [];
 
 function initializeVisitorCounter() {
     const visitCount = localStorage.getItem('visitCount') || 0;
@@ -43,12 +43,14 @@ function search() {
     const query = document.getElementById('searchBar').value.toLowerCase();
     const sortField = document.getElementById('sort').value;
 
+    // Filter results based on query
     let results = data.filter(item =>
         Object.values(item).some(val =>
             String(val).toLowerCase().includes(query)
         )
     );
 
+    // Sort results if a sort field is selected
     if (sortField) {
         results.sort((a, b) => {
             if (typeof a[sortField] === 'string') {
@@ -63,29 +65,32 @@ function search() {
 
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
+    const noResults = document.getElementById('noResults');
     resultsContainer.innerHTML = '';
 
     if (results.length === 0) {
-        document.getElementById('noResults').style.display = 'block';
-        document.getElementById('noResults').textContent = 'No results found. Showing closest matches:';
+        noResults.style.display = 'block';
+        noResults.textContent = 'No results found.';
     } else {
-        document.getElementById('noResults').style.display = 'none';
+        noResults.style.display = 'none';
         results.forEach(result => {
             const tr = document.createElement('tr');
-            Object.keys(result).forEach(key => {
-                const cell = document.createElement('td');
-                cell.innerHTML = highlight(result[key], document.getElementById('searchBar').value);
-                tr.appendChild(cell);
-            });
+            tr.innerHTML = `
+                <td>${highlight(result.ListAgentFullName)}</td>
+                <td>${highlight(result.ListAgentDirectPhone)}</td>
+                <td>${highlight(result.Address)}</td>
+                <td>${highlight(result.City)}</td>
+                <td>${highlight(result.BuyerAgencyCompensation)}</td>
+            `;
             resultsContainer.appendChild(tr);
         });
     }
 }
 
-function highlight(text, query) {
-    if (!query) return text;
-    const regex = new RegExp(query, 'gi');
-    return text.toString().replace(regex, match => `<mark>${match}</mark>`);
+function highlight(text) {
+    const query = document.getElementById('searchBar').value.toLowerCase();
+    if (!query || !text) return text;
+    return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
 }
 
 function clearSearch() {
@@ -108,7 +113,7 @@ function showAddListingForm() {
 
 function checkPassword() {
     const password = document.getElementById('listingPassword').value;
-    if (password === 'your_password_here') {
+    if (password === 'your_password_here') { // Replace with your actual password
         document.getElementById('listingFormFields').style.display = 'block';
     } else {
         alert('Incorrect password');

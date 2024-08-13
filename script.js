@@ -54,10 +54,10 @@ function displayResults(results) {
         results.forEach(result => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
+                <td>${highlight(result.ListAgentFullName)}</td>
+                <td>${highlight(result.ListAgentDirectPhone)}</td>
                 <td>${highlight(result.Address)}</td>
-                <td>${highlight(result.City)}</td>
-                <td>${highlight(result.CurrentPrice)}</td>
-                <td>${highlight(result.OnMarketDate)}</td>
+                <td>${highlight(result.BuyerAgencyCompensation)}</td>
             `;
             resultsContainer.appendChild(tr);
         });

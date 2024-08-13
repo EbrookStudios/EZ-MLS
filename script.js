@@ -1,24 +1,34 @@
-let data = []; // Ensure 'data' is declared only once
+let data = [];
 
-// Show the loading spinner
-document.getElementById('loadingSpinner').style.display = 'block';
+document.addEventListener('DOMContentLoaded', function() {
+    initializeVisitorCounter();
+    fetchData();
+    initializeEventListeners();
+});
 
-// Fetch the JSON data
-fetch('tri_county_data.json')
-    .then(response => response.json())
-    .then(jsonData => {
-        data = jsonData;
-        document.getElementById('loadingSpinner').style.display = 'none';
-        initializeEventListeners();
-    })
-    .catch(error => {
-        console.error('Error fetching data:', error);
-        document.getElementById('loadingSpinner').style.display = 'none';
-        document.getElementById('noResults').style.display = 'block';
-        document.getElementById('noResults').textContent = 'Failed to load data.';
-    });
+function initializeVisitorCounter() {
+    const visitCount = localStorage.getItem('visitCount') || 0;
+    localStorage.setItem('visitCount', Number(visitCount) + 1);
+    document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
+}
 
-// Initialize event listeners
+function fetchData() {
+    const spinner = document.getElementById('loadingSpinner');
+    spinner.style.display = 'block';
+    fetch('tri_county_data.json')
+        .then(response => response.json())
+        .then(jsonData => {
+            data = jsonData;
+            spinner.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            spinner.style.display = 'none';
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('noResults').textContent = 'Failed to load data.';
+        });
+}
+
 function initializeEventListeners() {
     document.getElementById('searchBar').addEventListener('input', search);
     document.getElementById('sort').addEventListener('change', search);
@@ -29,24 +39,16 @@ function initializeEventListeners() {
     document.getElementById('submitListing').addEventListener('click', addNewListing);
 }
 
-// Search function
 function search() {
     const query = document.getElementById('searchBar').value.toLowerCase();
     const sortField = document.getElementById('sort').value;
 
-    // Filter results based on query
-    let results = data.filter(item => 
-        Object.values(item).some(val => 
+    let results = data.filter(item =>
+        Object.values(item).some(val =>
             String(val).toLowerCase().includes(query)
         )
     );
 
-    // If no results, try finding close matches
-    if (results.length === 0 && query) {
-        results = findCloseMatches(query);
-    }
-
-    // Sort results if a sort field is selected
     if (sortField) {
         results.sort((a, b) => {
             if (typeof a[sortField] === 'string') {
@@ -59,62 +61,39 @@ function search() {
     displayResults(results);
 }
 
-// Display the search results
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
-    const noResults = document.getElementById('noResults');
     resultsContainer.innerHTML = '';
 
     if (results.length === 0) {
-        noResults.style.display = 'block';
-        noResults.textContent = 'No results found. Showing closest matches:';
+        document.getElementById('noResults').style.display = 'block';
+        document.getElementById('noResults').textContent = 'No results found. Showing closest matches:';
     } else {
-        noResults.style.display = 'none';
+        document.getElementById('noResults').style.display = 'none';
         results.forEach(result => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${highlight(result.ListAgentFullName)}</td>
-                <td>${highlight(result.ListAgentDirectPhone)}</td>
-                <td>${highlight(result.Address)}</td>
-                <td>${highlight(result.City)}</td>
-                <td>${highlight(result.BuyerAgencyCompensation)}</td>
-            `;
+            Object.keys(result).forEach(key => {
+                const cell = document.createElement('td');
+                cell.innerHTML = highlight(result[key], document.getElementById('searchBar').value);
+                tr.appendChild(cell);
+            });
             resultsContainer.appendChild(tr);
         });
     }
 }
 
-// Highlight the search term in results
-function highlight(text) {
-    const query = document.getElementById('searchBar').value.toLowerCase();
-    if (!query || !text) return text;
-    return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
+function highlight(text, query) {
+    if (!query) return text;
+    const regex = new RegExp(query, 'gi');
+    return text.toString().replace(regex, match => `<mark>${match}</mark>`);
 }
 
-// Find close matches by checking for partial matches
-function findCloseMatches(query) {
-    const threshold = 0.3;  // Set a threshold for what constitutes a "close" match
-    return data.filter(item => 
-        Object.values(item).some(val => 
-            calculateSimilarity(query, String(val).toLowerCase()) > threshold
-        )
-    );
-}
-
-// Calculate basic similarity between two strings (e.g., Jaccard similarity)
-function calculateSimilarity(str1, str2) {
-    const intersection = new Set([...str1].filter(x => new Set([...str2]).has(x)));
-    return intersection.size / (new Set([...str1]).size + new Set([...str2]).size - intersection.size);
-}
-
-// Clear the search input and results
 function clearSearch() {
     document.getElementById('searchBar').value = '';
     document.getElementById('sort').value = '';
     search();
 }
 
-// Toggle between dark and light mode
 function toggleTheme() {
     const body = document.body;
     const themeIcon = document.getElementById('theme-icon');
@@ -123,22 +102,19 @@ function toggleTheme() {
     themeIcon.classList.toggle('fa-sun');
 }
 
-// Show the Add Listing form
 function showAddListingForm() {
     document.getElementById('addListingForm').style.display = 'flex';
 }
 
-// Check the password before showing the listing form fields
 function checkPassword() {
     const password = document.getElementById('listingPassword').value;
-    if (password === 'your_password_here') { // Replace with your actual password
+    if (password === 'your_password_here') {
         document.getElementById('listingFormFields').style.display = 'block';
     } else {
         alert('Incorrect password');
     }
 }
 
-// Add a new listing
 function addNewListing() {
     const agentOrHomeowner = document.getElementById('agentOrHomeowner').value;
     const agentName = document.getElementById('agentName').value;
@@ -158,16 +134,15 @@ function addNewListing() {
         ListAgentDirectPhone: agentOrHomeowner === 'Agent' ? licenseNumber : 'N/A',
         Address: address,
         City: city,
-        BuyerAgencyCompensation: compensation,
-        Price: price
+        Price: price,
+        BuyerAgencyCompensation: compensation
     };
 
     data.push(newListing);
-    clearFormFields();
     alert('Listing added successfully!');
+    clearFormFields();
 }
 
-// Clear the form fields after adding a listing
 function clearFormFields() {
     document.getElementById('agentOrHomeowner').value = 'Agent';
     document.getElementById('agentName').value = '';
@@ -177,4 +152,5 @@ function clearFormFields() {
     document.getElementById('price').value = '';
     document.getElementById('compensation').value = '';
     document.getElementById('listingFormFields').style.display = 'none';
+    document.getElementById('listingPassword').value = ''; // Clear the password field also
 }

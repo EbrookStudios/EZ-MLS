@@ -3,13 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Property Commission Search</title>
+    <title>Property Commission Search - EbrookStudios</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Property Commission Search</h1>
-        <input type="text" id="searchBar" placeholder="Search for an address, city, price, etc...">
+    <header>
+        <div class="logo">
+            <!-- Add your logo here -->
+            <h1>EbrookStudios</h1>
+        </div>
+        <div class="theme-toggle">
+            <i class="fas fa-moon" id="theme-icon"></i>
+        </div>
+    </header>
+    
+    <main>
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search by address, city, price, etc...">
+            <div class="loading-spinner" id="loadingSpinner"></div>
+        </div>
+
         <div class="controls">
             <label for="sort">Sort by:</label>
             <select id="sort">
@@ -21,7 +35,9 @@
             </select>
             <button id="clearSearch">Clear Search</button>
         </div>
+        
         <div id="noResults" style="display: none;">No results found.</div>
+        
         <table id="resultsTable">
             <thead>
                 <tr>
@@ -31,10 +47,14 @@
                     <th>Date</th>
                 </tr>
             </thead>
-            <tbody id="results">
-            </tbody>
+            <tbody id="results"></tbody>
         </table>
-    </div>
+    </main>
+    
+    <footer>
+        <p>Made with <i class="fas fa-heart"></i> by EbrookStudios</p>
+    </footer>
+    
     <script src="script.js"></script>
 </body>
 </html>

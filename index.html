@@ -1,14 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZMoney Property Commission Search</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Styles trimmed for brevity. Ensure your CSS covers all needed styles. */
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: #1c1c1c;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .logo h1 {
+            color: #00bcd4;
+            margin: 0;
+            font-size: 24px;
+        }
+        .logo p {
+            margin: 5px 0 0;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+        }
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 24px;
+            color: #f0f0f0;
+        }
+        .visitor-counter {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #00bcd4;
+        }
+        .add-listing-btn {
+            background-color: #00bcd4;
+            color: #1c1c1c;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            transition: background-color 0.3s ease;
+        }
+        .add-listing-btn:hover {
+            background-color: #008394;
+            color: #ffffff;
+        }
+        main {
+            padding: 20px;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-direction: column;
+        }
+        #searchBar {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 25px;
+            border: 2px solid #00bcd4;
+            background: #1c1c1c;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.7);
+            transition: all 0.3s ease-in-out;
+            margin-bottom: 10px;
+        }
+        #searchBar:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 188, 212, 1);
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        #sort {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            background: #1c1c1c;
+            color: #e0e0e0;
+            border: 2px solid #00bcd4;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            flex: 1;
+            margin-right: 10px;
+        }
+        #clearSearch {
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            background: #00bcd4;
+            color: #1c1c1c;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+        #clearSearch:hover {
+            background: #008394;
+            color: #ffffff;
+        }
+        #resultsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #1c1c1c;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #resultsTable th, #resultsTable td {
+            padding: 15px;
+            border: 1px solid #333333;
+            text-align: left;
+        }
+        #resultsTable th {
+            background-color: #00bcd4;
+            color: #1c1c1c;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        #resultsTable td {
+            background-color: #1c1c1c;
+        }
+        #noResults {
+            text-align: center;
+            color: #ff5252;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .add-listing-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .add-listing-form {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: #1c1c1c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+            max-width: 500px;
+            width: 100%;
+        }
+        .add-listing-form input, .add-listing-form select {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #00bcd4;
+            background: #1c1c1c;
+            color: #e0e0e0;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            font-size: 16px;
+        }
+        .add-listing-form button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: #00bcd4;
+            color: #1c1c1c;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease-in-out;
+        }
+        .add-listing-form button:hover {
+            background: #008394;
+            color: #ffffff;
+        }
+        footer {
+            background: #1c1c1c;
+            padding: 20px;
+            text-align: center;
+            color: #e0e0e0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        footer .disclaimer {
+            font-size: 12px;
+            margin-top: 10px;
+            color: #ccc;
+        }
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+            #sort {
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            #clearSearch {
+                width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
     <header>
         <div class="logo">
@@ -26,59 +249,229 @@
             <button id="addListingButton" class="add-listing-btn">Add Listing</button>
         </div>
     </header>
-    <main>
-        <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search by agent, address, city, etc..." aria-label="Search">
-        </div>
-        <div class="controls">
-            <label for="sort">Sort by:</label>
-            <select id="sort">
-                <option value="">None</option>
-                <option value="ListAgentFullName">Agent Name</option>
-                <option value="Address">Address</option>
-                <option value="City">City</option>
-                <option value="BuyerAgencyCompensation">Buyer's Agency Compensation</option>
+
+   <main>
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Search by agent, address, city, etc..." aria-label="Search">
+        <div class="loading-spinner" id="loadingSpinner"></div>
+    </div>
+
+    <div class="controls">
+        <label for="sort">Sort by:</label>
+        <select id="sort">
+            <option value="">None</option>
+            <option value="ListAgentFullName">Agent Name</option>
+            <option value="Address">Address</option
+            <option value="City">City</option>
+            <option value="BuyerAgencyCompensation">Buyer's Agency Compensation</option>
+        </select>
+        <button id="clearSearch">Clear Search</button>
+    </div>
+
+    <div id="noResults" style="display: none;">No results found. Showing closest matches:</div>
+
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Agent Name</th>
+                <th>Phone Number</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Buyer's Agency Compensation</th>
+            </tr>
+        </thead>
+        <tbody id="results"></tbody>
+    </table>
+
+    <!-- Add a Listing Section -->
+    <div class="add-listing-container">
+        <button id="addListingButton">Add a Listing</button>
+    </div>
+
+    <div class="add-listing-form" id="addListingForm">
+        <h2>Add a New Listing</h2>
+        <input type="password" id="listingPassword" placeholder="Enter Password">
+        <button id="checkPasswordButton">Submit Password</button>
+
+        <div id="listingFormFields" style="display:none;">
+            <select id="agentOrHomeowner">
+                <option value="Agent">Agent</option>
+                <option value="Homeowner">Homeowner</option>
             </select>
-            <button id="clearSearch">Clear Search</button>
+
+            <input type="text" id="agentName" placeholder="Your Name" required>
+            <input type="text" id="licenseNumber" placeholder="License Number (if Agent)">
+            <input type="text" id="address" placeholder="Property Address" required>
+            <input type="text" id="city" placeholder="City" required>
+            <input type="number" id="price" placeholder="Price" required>
+            <input type="number" id="compensation" placeholder="Buyer's Agency Compensation" required>
+            <button id="submitListing">Submit Listing</button>
         </div>
-        <div id="noResults" style="display: none;">No results found. Showing closest matches:</div>
-        <table id="resultsTable">
-            <thead>
-                <tr>
-                    <th>Agent Name</th>
-                    <th>Phone Number</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>Buyer's Agency Compensation</th>
-                </tr>
-            </thead>
-            <tbody id="results"></tbody>
-        </table>
-        <div class="add-listing-form" id="addListingForm" style="display: none;">
-            <h2>Add a New Listing</h2>
-            <input type="password" id="listingPassword" placeholder="Enter Password">
-            <button id="checkPasswordButton">Submit Password</button>
-            <div id="listingFormFields" style="display:none;">
-                <select id="agentOrHomeowner">
-                    <option value="Agent">Agent</option>
-                    <option value="Homeowner">Homeowner</option>
-                </select>
-                <input type="text" id="agentName" placeholder="Your Name" required>
-                <input type="text" id="licenseNumber" placeholder="License Number (if Agent)">
-                <input type="text" id="address" placeholder="Property Address" required>
-                <input type="text" id="city" placeholder="City" required>
-                <input type="number" id="price" placeholder="Price" required>
-                <input type="number" id="compensation" placeholder="Buyer's Agency Compensation" required>
-                <button id="submitListing">Submit Listing</button>
-            </div>
-        </div>
-    </main>
-    <footer>
-        <p>Made with <i class="fas fa-heart"></i> by EZMoney</p>
-        <div class="disclaimer">
-            <p>Disclaimer: The information provided on this site is for informational purposes only and may not be accurate or up-to-date. EZMoney and its affiliates assume no liability for any inaccuracies in the data presented. Users are encouraged to verify any information before making decisions.</p>
-        </div>
-    </footer>
-    <script src="script.js"></script>
+    </div>
+</main>
+
+<footer>
+    <p>Made with <i class="fas fa-heart"></i> by EZMoney</p>
+    <div class="disclaimer">
+        <p>Disclaimer: The information provided on this site is for informational purposes only and may not be accurate or up-to-date. EZMoney and its affiliates assume no liability for any inaccuracies in the data presented. Users are encouraged to verify any information before making decisions.</p>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+    // Visitor Counter Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const visitCount = localStorage.getItem('visitCount') || 0;
+        localStorage.setItem('visitCount', Number(visitCount) + 1);
+        document.getElementById('visitCount').textContent = localStorage.getItem('visitCount');
+    });
+
+    // Search Function Logic
+    let data = [];
+
+    // Show the loading spinner
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    // Fetch the JSON data
+    fetch('tri_county_data.json')
+        .then(response => response.json())
+        .then(jsonData => {
+            data = jsonData;
+            document.getElementById('loadingSpinner').style.display = 'none';
+            initializeEventListeners();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            document.getElementById('loadingSpinner')..style.display = 'none';
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('noResults').textContent = 'Failed to load data.';
+        });
+
+    // Initialize event listeners
+    function initializeEventListeners() {
+        document.getElementById('searchBar').addEventListener('input', search);
+        document.getElementById('sort').addEventListener('change', search);
+        document.getElementById('clearSearch').addEventListener('click', clearSearch);
+        document.getElementById('theme-icon').addEventListener('click', toggleTheme);
+        document.getElementById('addListingButton').addEventListener('click', showAddListingForm);
+        document.getElementById('checkPasswordButton').addEventListener('click', checkPassword);
+    }
+
+    // Search function
+    function search() {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        const sortField = document.getElementById('sort').value;
+
+        // Filter results based on query
+        let results = data.filter(item =>
+            Object.values(item).some(val =>
+                String(val).toLowerCase().includes(query)
+            )
+        );
+
+        // If no results, try finding close matches
+        if (results.length === 0 && query) {
+            results = findCloseMatches(query);
+        }
+
+        // Sort results if a sort field is selected
+        if (sortField) {
+            results.sort((a, b) => {
+                if (typeof a[sortField] === 'string') {
+                    return a[sortField].localeCompare(b[sortField]);
+                }
+                return a[sortField] - b[sortField];
+            });
+        }
+
+        displayResults(results);
+    }
+
+    // Display the search results
+    function displayResults(results) {
+        const resultsContainer = document.getElementById('results');
+        const noResults = document.getElementById('noResults');
+        resultsContainer.innerHTML = '';
+
+        if (results.length === 0) {
+            noResults.style.display = 'block';
+            noResults.textContent = 'No results found. Showing closest matches:';
+        } else {
+            noResults.style.display = 'none';
+            results.forEach(result => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = 
+                    <td>${highlight(result.ListAgentFullName)}</td>
+                    <td>${highlight(result.ListAgentDirectPhone)}</td>
+                    <td>${highlight(result.Address)}</td>
+                    <td>${highlight(result.City)}</td>
+                    <td>${highlight(result.BuyerAgencyCompensation)}</td>
+                ;
+                resultsContainer.appendChild(tr);
+            });
+        }
+    }
+
+    // Highlight the search term in results
+    function highlight(text) {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        if (!query || !text) return text;
+        return text.toString().replace(new RegExp(query, "gi"), match => <mark>${match}</mark>);
+    }
+
+    // Find close matches by checking for partial matches
+    function findCloseMatches(query) {
+        const threshold = 0.3;  // Set a threshold for what constitutes a "close" match
+        return data.filter(item =>
+            Object.values(item).some(val =>
+                calculateSimilarity(query, String(val).toLowerCase()) > threshold
+            )
+        );
+    }
+
+        // Calculate basic similarity between two strings (e.g., Jaccard similarity)
+    function calculateSimilarity(str1, str2) {
+        const intersection = new Set([...str1].filter(x => new Set([...str2]).has(x)));
+        return intersection.size / (new Set([...str1]).size + new Set([...str2]).size - intersection.size);
+    }
+
+    // Clear the search input and results
+    function clearSearch() {
+        document.getElementById('searchBar').value = '';
+        document.getElementById('sort').value = '';
+        search();
+    }
+
+    // Toggle between dark and light mode
+    function toggleTheme() {
+        const body = document.body;
+        const themeIcon = document.getElementById('theme-icon');
+        body.classList.toggle('dark-theme');
+        themeIcon.classList.toggle('fa-moon');
+        themeIcon.classList.toggle('fa-sun');
+        if(body.classList.contains('dark-theme')) {
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        } else {
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+    }
+
+    // Show the Add Listing form
+    function showAddListingForm() {
+        const form = document.getElementById('addListingForm');
+        form.style.display = form.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    // Check the password before showing the listing form fields
+    function checkPassword() {
+        const password = document.getElementById('listingPassword').value;
+        const formFields = document.getElementById('listingFormFields');
+        if (password === 'your_password_here') { // Replace 'your_password_here' with your actual password
+            formFields.style.display = 'block';
+        } else {
+            alert('Incorrect password');
+        }
+    }
+</script>
 </body>
 </html>

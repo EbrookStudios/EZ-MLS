@@ -9,11 +9,22 @@ fetch('tri_county_data.json')
     .then(jsonData => {
         data = jsonData;
         document.getElementById('loadingSpinner').style.display = 'none';
-        document.getElementById('searchBar').addEventListener('input', search);
-        document.getElementById('sort').addEventListener('change', search);
-        document.getElementById('clearSearch').addEventListener('click', clearSearch);
-        document.getElementById('theme-icon').addEventListener('click', toggleTheme);
+        initializeEventListeners();
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('noResults').style.display = 'block';
+        document.getElementById('noResults').textContent = 'Failed to load data.';
     });
+
+// Initialize event listeners
+function initializeEventListeners() {
+    document.getElementById('searchBar').addEventListener('input', search);
+    document.getElementById('sort').addEventListener('change', search);
+    document.getElementById('clearSearch').addEventListener('click', clearSearch);
+    document.getElementById('theme-icon').addEventListener('click', toggleTheme);
+}
 
 // Search function
 function search() {
@@ -34,7 +45,12 @@ function search() {
 
     // Sort results if a sort field is selected
     if (sortField) {
-        results.sort((a, b) => (a[sortField] > b[sortField]) ? 1 : -1);
+        results.sort((a, b) => {
+            if (typeof a[sortField] === 'string') {
+                return a[sortField].localeCompare(b[sortField]);
+            }
+            return a[sortField] - b[sortField];
+        });
     }
 
     displayResults(results);
@@ -69,8 +85,8 @@ function displayResults(results) {
 // Highlight the search term in results
 function highlight(text) {
     const query = document.getElementById('searchBar').value.toLowerCase();
-    if (!query) return text;
-    return text ? text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`) : '';
+    if (!query || !text) return text;
+    return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
 }
 
 // Find close matches by checking for partial matches

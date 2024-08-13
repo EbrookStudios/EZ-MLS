@@ -442,36 +442,31 @@
             }
         }
 
-        // Highlight the search term in results
-        function highlight(text) {
-            const query = document.getElementById('searchBar').value.toLowerCase();
-            if (!query || !text) return text;
-            return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
-        }
+// Highlight the search term in results
+function highlight(text) {
+    const query = document.getElementById('searchBar').value.toLowerCase();
+    if (!query || !text) return text;
+    return text.toString().replace(new RegExp(query, "gi"), match => `<mark>${match}</mark>`);
+}
 
-        // Clear the search input and results
-        function clearSearch() {
-            document.getElementById('searchBar').value = '';
-            document.getElementById('sort').value = '';
-            search();
-        }
+// Clear the search input and results
+function clearSearch() {
+    document.getElementById('searchBar').value = '';
+    document.getElementById('sort').value = '';
+    search();
+}
 
-        // Toggle between dark and light mode
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('theme-icon');
-            body.classList.toggle('dark-theme');
-            themeIcon.classList.toggle('fa-moon');
-            themeIcon.classList.toggle('fa-sun');
-        }
+// Hide the theme toggle button by setting display to none
+document.getElementById('theme-icon').style.display = 'none';
 
-        // Show the Add Listing form
-        function showAddListingForm() {
-            document.getElementById('addListingForm').style.display = 'flex';
-        }
+// Show the Add Listing form
+function showAddListingForm() {
+    document.getElementById('addListingForm').style.display = 'flex';
+}
 
-        // Add a new listing with a timestamp
-    function addNewListing() {
+// Add a new listing with a timestamp
+function addNewListing() {
+    // Retrieve and trim values
     const agentName = document.getElementById('agentName').value.trim();
     const phoneNumber = document.getElementById('phoneNumber').value.trim();
     const licenseNumber = document.getElementById('licenseNumber').value.trim();
@@ -480,12 +475,24 @@
     const price = document.getElementById('price').value.trim();
     const compensation = document.getElementById('compensation').value.trim();
 
+    // Log values for debugging purposes
+    console.log({
+        agentName,
+        phoneNumber,
+        licenseNumber,
+        address,
+        city,
+        price,
+        compensation
+    });
+
     // Validate that all fields are filled out
     if (!agentName || !phoneNumber || !licenseNumber || !address || !city || !price || !compensation) {
         alert('Please fill out all fields.');
         return;
     }
 
+    // If all fields are filled, proceed to add the listing
     const newListing = {
         ListAgentFullName: agentName,
         ListAgentDirectPhone: phoneNumber,
@@ -500,7 +507,7 @@
     alert('Listing added successfully.');
 }
 
-    </script>
+</script>
 </body>
-
 </html>
+

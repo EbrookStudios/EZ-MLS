@@ -1,4 +1,4 @@
-let data = [];
+let data = []; // Ensure 'data' is declared only once
 
 // Show the loading spinner
 document.getElementById('loadingSpinner').style.display = 'block';

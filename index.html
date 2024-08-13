@@ -192,13 +192,6 @@
             margin-top: 20px;
         }
 
-        .add-listing-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            width: 100%;
-        }
-
         .add-listing-form {
             display: none;
             flex-direction: column;
@@ -334,10 +327,6 @@
         </table>
 
         <!-- Add a Listing Section -->
-        <div class="add-listing-container">
-            <button id="addListingButton">Add a Listing</button>
-        </div>
-
         <div class="add-listing-form" id="addListingForm">
             <h2>Add a New Listing</h2>
             <input type="password" id="listingPassword" placeholder="Enter Password">
@@ -429,7 +418,8 @@
                     if (typeof a[sortField] === 'string') {
                         return a[sortField].localeCompare(b[sortField]);
                     }
-                    return a[sortField] - b[sortField]);
+                    return a[sortField] - b[sortField];
+                });
             }
 
             displayResults(results);

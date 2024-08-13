@@ -7,9 +7,34 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Property Commission Search</h1>
-    <input type="text" id="searchBar" placeholder="Search for an address, city, or any term...">
-    <ul id="results"></ul>
+    <div class="container">
+        <h1>Property Commission Search</h1>
+        <input type="text" id="searchBar" placeholder="Search for an address, city, price, etc...">
+        <div class="controls">
+            <label for="sort">Sort by:</label>
+            <select id="sort">
+                <option value="">None</option>
+                <option value="Address">Address</option>
+                <option value="City">City</option>
+                <option value="Price">Price</option>
+                <option value="Date">Date</option>
+            </select>
+            <button id="clearSearch">Clear Search</button>
+        </div>
+        <div id="noResults" style="display: none;">No results found.</div>
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="results">
+            </tbody>
+        </table>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

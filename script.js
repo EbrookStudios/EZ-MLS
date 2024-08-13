@@ -24,6 +24,9 @@ function initializeEventListeners() {
     document.getElementById('sort').addEventListener('change', search);
     document.getElementById('clearSearch').addEventListener('click', clearSearch);
     document.getElementById('theme-icon').addEventListener('click', toggleTheme);
+    document.getElementById('addListingButton').addEventListener('click', showAddListingForm);
+    document.getElementById('checkPasswordButton').addEventListener('click', checkPassword);
+    document.getElementById('submitListing').addEventListener('click', addNewListing);
 }
 
 // Search function
@@ -73,6 +76,7 @@ function displayResults(results) {
                 <td>${highlight(result.ListAgentFullName)}</td>
                 <td>${highlight(result.ListAgentDirectPhone)}</td>
                 <td>${highlight(result.Address)}</td>
+                <td>${highlight(result.City)}</td>
                 <td>${highlight(result.BuyerAgencyCompensation)}</td>
             `;
             resultsContainer.appendChild(tr);
@@ -117,4 +121,60 @@ function toggleTheme() {
     body.classList.toggle('dark-theme');
     themeIcon.classList.toggle('fa-moon');
     themeIcon.classList.toggle('fa-sun');
+}
+
+// Show the Add Listing form
+function showAddListingForm() {
+    document.getElementById('addListingForm').style.display = 'flex';
+}
+
+// Check the password before showing the listing form fields
+function checkPassword() {
+    const password = document.getElementById('listingPassword').value;
+    if (password === 'your_password_here') { // Replace with your actual password
+        document.getElementById('listingFormFields').style.display = 'block';
+    } else {
+        alert('Incorrect password');
+    }
+}
+
+// Add a new listing
+function addNewListing() {
+    const agentOrHomeowner = document.getElementById('agentOrHomeowner').value;
+    const agentName = document.getElementById('agentName').value;
+    const licenseNumber = document.getElementById('licenseNumber').value;
+    const address = document.getElementById('address').value;
+    const city = document.getElementById('city').value;
+    const price = document.getElementById('price').value;
+    const compensation = document.getElementById('compensation').value;
+
+    if (!agentName || !address || !city || !price || !compensation) {
+        alert('Please fill out all required fields.');
+        return;
+    }
+
+    const newListing = {
+        ListAgentFullName: agentName,
+        ListAgentDirectPhone: agentOrHomeowner === 'Agent' ? licenseNumber : 'N/A',
+        Address: address,
+        City: city,
+        BuyerAgencyCompensation: compensation,
+        Price: price
+    };
+
+    data.push(newListing);
+    clearFormFields();
+    alert('Listing added successfully!');
+}
+
+// Clear the form fields after adding a listing
+function clearFormFields() {
+    document.getElementById('agentOrHomeowner').value = 'Agent';
+    document.getElementById('agentName').value = '';
+    document.getElementById('licenseNumber').value = '';
+    document.getElementById('address').value = '';
+    document.getElementById('city').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('compensation').value = '';
+    document.getElementById('listingFormFields').style.display = 'none';
 }

@@ -47,11 +47,41 @@
             font-size: 14px;
         }
 
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+        }
+
         .theme-toggle {
             cursor: pointer;
             font-size: 24px;
             color: #f0f0f0;
-            margin-top: 10px;
+        }
+
+        .visitor-counter {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #00bcd4;
+        }
+
+        .add-listing-btn {
+            background-color: #00bcd4;
+            color: #1c1c1c;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            transition: background-color 0.3s ease;
+        }
+
+        .add-listing-btn:hover {
+            background-color: #008394;
+            color: #ffffff;
         }
 
         main {
@@ -219,11 +249,6 @@
             color: #ccc;
         }
 
-        .visitor-counter {
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
         @media (max-width: 600px) {
             .controls {
                 flex-direction: column;
@@ -248,12 +273,18 @@
             <h1>EZMoney</h1>
             <p>Mahoning, Columbiana, and Trumbull Counties - Data as of August 12th</p>
         </div>
-        <div class="theme-toggle">
-            <i class="fas fa-moon" id="theme-icon"></i>
+        <div class="header-controls">
+            <div class="theme-toggle">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </div>
+            <div class="visitor-counter">
+                <p>Page Visits: <span id="visitCount"></span></p>
+            </div>
+            <button id="addListingButton" class="add-listing-btn">Add Listing</button>
         </div>
     </header>
 
-    <main>
+   <main>
     <div class="search-container">
         <input type="text" id="searchBar" placeholder="Search by agent, address, city, etc..." aria-label="Search">
         <div class="loading-spinner" id="loadingSpinner"></div>
@@ -475,4 +506,3 @@
 </body>
 </html>
 
-                   

@@ -187,7 +187,7 @@
     
     <main>
         <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search by agent, address, MLS, etc..." aria-label="Search">
+            <input type="text" id="searchBar" placeholder="Search by agent, address, city, etc..." aria-label="Search">
             <div class="loading-spinner" id="loadingSpinner"></div>
         </div>
 
@@ -197,6 +197,7 @@
                 <option value="">None</option>
                 <option value="ListAgentFullName">Agent Name</option>
                 <option value="Address">Address</option>
+                <option value="City">City</option>
                 <option value="BuyerAgencyCompensation">Buyer's Agency Compensation</option>
             </select>
             <button id="clearSearch">Clear Search</button>
@@ -210,8 +211,8 @@
                     <th>Agent Name</th>
                     <th>Phone Number</th>
                     <th>Address</th>
+                    <th>City</th>
                     <th>Buyer's Agency Compensation</th>
-                    <th>Buyer’s Agency Compensation Type</th>
                 </tr>
             </thead>
             <tbody id="results"></tbody>

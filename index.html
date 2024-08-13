@@ -471,28 +471,35 @@
         }
 
         // Add a new listing with a timestamp
-        function addNewListing() {
-            const agentOrHomeowner = document.getElementById('agentOrHomeowner').value;
-            const agentName = document.getElementById('agentName').value;
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const licenseNumber = document.getElementById('licenseNumber').value || 'N/A';
-            const address = document.getElementById('address').value;
-            const city = document.getElementById('city').value;
-            const price = document.getElementById('price').value;
-            const compensation = document.getElementById('compensation').value;
+    function addNewListing() {
+    const agentName = document.getElementById('agentName').value.trim();
+    const phoneNumber = document.getElementById('phoneNumber').value.trim();
+    const licenseNumber = document.getElementById('licenseNumber').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const city = document.getElementById('city').value.trim();
+    const price = document.getElementById('price').value.trim();
+    const compensation = document.getElementById('compensation').value.trim();
 
-            const newListing = {
-                ListAgentFullName: agentName,
-                ListAgentDirectPhone: phoneNumber,
-                Address: address,
-                City: city,
-                BuyerAgencyCompensation: compensation,
-                timestamp: new Date().toISOString(),
-            };
+    // Validate that all fields are filled out
+    if (!agentName || !phoneNumber || !licenseNumber || !address || !city || !price || !compensation) {
+        alert('Please fill out all fields.');
+        return;
+    }
 
-            propertyData.push(newListing);
-            clearSearch();
-        }
+    const newListing = {
+        ListAgentFullName: agentName,
+        ListAgentDirectPhone: phoneNumber,
+        Address: address,
+        City: city,
+        BuyerAgencyCompensation: compensation,
+        timestamp: new Date().toISOString(),
+    };
+
+    propertyData.push(newListing);
+    clearSearch();
+    alert('Listing added successfully.');
+}
+
     </script>
 </body>
 

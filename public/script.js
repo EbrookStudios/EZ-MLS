@@ -170,6 +170,7 @@ function addNewListing() {
     });
 }
 
+
 function clearFormFields() {
     document.getElementById('agentOrHomeowner').value = 'Agent';
     document.getElementById('agentName').value = '';
@@ -181,3 +182,22 @@ function clearFormFields() {
     document.getElementById('listingFormFields').style.display = 'none';
     document.getElementById('listingPassword').value = ''; // Clear the password field also
 }
+
+// Import the functions you need from the Firebase SDKs
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDoVNP1YO8eysX5uhoINMupFqOf1tsuN20",
+  authDomain: "ezmls-d3192.firebaseapp.com",
+  projectId: "ezmls-d3192",
+  storageBucket: "ezmls-d3192.appspot.com",
+  messagingSenderId: "797326463919",
+  appId: "1:797326463919:web:6e66e8a26f5dcea7db555a",
+  measurementId: "G-4YRXCQ83ZD"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

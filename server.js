@@ -23,11 +23,18 @@ app.post('/add-listing', (req, res) => {
     // Read the existing data from the JSON file
     fs.readFile(path.join(__dirname, 'tri_county_data.json'), (err, data) => {
         if (err) {
-            res.status(500).send('Error reading file');
-            return;
+            return res.status(500).send('Error reading file');
         }
 
-        let listings = JSON.parse(data);
+        let listings = [];
+
+        // Parse the existing JSON data, if available
+        try {
+            listings = JSON.parse(data);
+        } catch (err) {
+            console.error("Error parsing JSON data:", err);
+            return res.status(500).send('Error parsing data');
+        }
 
         // Add the new listing with a timestamp
         newListing.timestamp = new Date().toISOString();
@@ -36,13 +43,29 @@ app.post('/add-listing', (req, res) => {
         // Write the updated data back to the JSON file
         fs.writeFile(path.join(__dirname, 'tri_county_data.json'), JSON.stringify(listings, null, 2), err => {
             if (err) {
-                res.status(500).send('Error writing file');
-                return;
+                return res.status(500).send('Error writing file');
             }
 
             res.status(200).send('Listing added successfully');
         });
     });
+});
+
+// Serve the JSON data file directly
+app.get('/tri_county_data.json', (req, res) => {
+    const filePath = path.join(__dirname, 'tri_county_data.json');
+    
+    // Check if the file exists
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.status(404).send('JSON file not found');
+    }
+});
+
+// Catch-all route for handling 404s
+app.use((req, res) => {
+    res.status(404).send('Sorry, page not found');
 });
 
 // Start the server

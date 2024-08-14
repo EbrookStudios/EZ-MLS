@@ -20,6 +20,7 @@ function fetchData() {
         .then(jsonData => {
             data = jsonData;
             spinner.style.display = 'none';
+            search(); // Display data after loading
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -143,9 +144,30 @@ function addNewListing() {
         BuyerAgencyCompensation: compensation
     };
 
-    data.push(newListing);
-    alert('Listing added successfully!');
-    clearFormFields();
+    // Send the new listing to the server
+    fetch('/add-listing', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newListing),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(() => {
+        data.push(newListing); // Update the local array
+        alert('Listing added successfully!');
+        clearFormFields();
+        search(); // Re-run search to include the new listing
+    })
+    .catch(error => {
+        console.error('There was a problem with the add listing request:', error);
+        alert('Failed to add listing. Please try again later.');
+    });
 }
 
 function clearFormFields() {

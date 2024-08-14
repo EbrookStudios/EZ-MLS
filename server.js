@@ -22,7 +22,7 @@ app.post('/add-listing', (req, res) => {
     console.log('New listing received:', newListing); // Log the received listing data
 
     // Read the existing data from the JSON file
-    fs.readFile(path.join(__dirname, 'tri_county_data.json'), (err, data) => {
+    fs.readFile(path.join(__dirname, 'tri_county_data.json'), 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err); // Log an error if file reading fails
             return res.status(500).send('Error reading file');
